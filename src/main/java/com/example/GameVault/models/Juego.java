@@ -10,7 +10,7 @@ import org.hibernate.Length;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name="Juegos")
+@Table(name = "Juegos")
 public class Juego {
 
     @Id
@@ -20,9 +20,21 @@ public class Juego {
     @Column(nullable = false)
     private String titulo;
 
-    @Column(length =1000)
+    @Column(length = 1000)
     private String descripcion;
 
-    @Column(name="portada_url")
+    // Almacenaremos el nombre del archivo o URL de la imagen
+    @Column(name = "portada_url")
     private String portadaUrl;
+
+    @Column
+    private Double precio;
+
+    @Column
+    private String categoria;
+
+    @ManyToOne
+    @JoinColumn(name = "id_usuario")
+    private Usuario usuario;
+
 }

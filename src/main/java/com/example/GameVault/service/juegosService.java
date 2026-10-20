@@ -21,24 +21,25 @@ public class juegosService {
 
     private static final String UPLOAD_DIR = "src/main/resources/static/uploads/";
 
-    public List<Juego> obtenerTodos(){
-     return juegoRepository.findAll();
+    public List<Juego> obtenerTodos() {
+        return juegoRepository.findAll();
     }
 
-    public void guardarJuego(Juego juego, MultipartFile portada){
-        String nombreArchivo = "default.png";
+    public void guardarJuego(Juego juego, MultipartFile portada) {
+        String nombreArchivo = juego.getPortadaUrl();
 
-        if(portada !=null && !portada.isEmpty()){
-            nombreArchivo= guardarImagenLocal(portada);
-            // Cloudinary
-            // Storage de filebase
+        if (portada != null && !portada.isEmpty()) {
+            nombreArchivo = guardarImagenLocal(portada);
+        }
+        if (nombreArchivo == null || nombreArchivo.isBlank()) {
+            nombreArchivo = "default.png";
         }
 
         juego.setPortadaUrl(nombreArchivo);
         juegoRepository.save(juego);
     }
 
-    public String guardarImagenLocal(MultipartFile portada){
+    public String guardarImagenLocal(MultipartFile portada) {
         try {
             //Tip para clase: Crear la carpeta si no existe
             Path uploadPath = Paths.get(UPLOAD_DIR);
@@ -53,17 +54,32 @@ public class juegosService {
             // Guardamos el archivo fisicamente en el disco
             Files.copy(portada.getInputStream(), filePath);
             return nombreArchivo;
+
         } catch (IOException e) {
             e.printStackTrace();
             return "default.png";
         }
     }
 
-    public List<Juego> buscarPorTitulo(String palabra){
-        if(palabra==null || palabra.trim().isEmpty()){
+    public List<Juego> buscarPorTitulo(String palabra) {
+        if (palabra == null || palabra.trim().isEmpty()) {
             return obtenerTodos();
         }
         return juegoRepository.findByTituloContainingIgnoreCase(palabra);
     }
+
+
+    public Juego obtenerJuegoPorId(Long id) {
+        return juegoRepository.findById(id).orElse(null);
+    }
+
+    public void eliminarJuego(Long id) {
+        juegoRepository.deleteById(id);
+    }
+
+    public List<Juego> obtenerJuegosPorUsuario(Long usuarioId) {
+        return juegoRepository.findByUsuario_Id(usuarioId);
+    }
+
 
 }
